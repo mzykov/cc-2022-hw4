@@ -10,3 +10,6 @@ It is expected that your class has following methods:
 * Add/fire employees
 * Change salary/position/... for a group of employees
 * Select workers by some filter
+
+---
+> python3 -m unittest discover -p "*_test.py"
