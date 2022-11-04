@@ -7,6 +7,9 @@ class Employee:
         self.name = name
         self.email = email
         self.phone = phone
+        self.boss = None
+        self.position = None
+        self.subordinates = dict()
 
     def update_email(self, email):
         if email:
@@ -20,6 +23,13 @@ class Employee:
 
     def id(self):
         return self.id
+
+    def update_subordinates(self, employee):
+        self.subordinates[employee.id] = employee
+
+    def remove_subordinates(self, employee):
+        employee.boss = None
+        del self.subordinates[employee.id]
 
     def __repr__(self):
         parts = [ self.name ]
