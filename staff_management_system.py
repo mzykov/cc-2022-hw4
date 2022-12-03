@@ -1,16 +1,26 @@
-import unittest
+from random import randint
 
 from department import Department
 from employee   import Employee
 from position   import Position
 
 class StaffManagementSystem:
+    lucky_max = 1000000
+    is_production = True
 
     def __init__(self):
+        self.president = None
         self.departments = dict()
         self.employees_by_id = dict()
         self.employees_by_email = dict()
         self.employees_by_phone = dict()
+
+    @classmethod
+    def is_lucky(cls):
+        if not cls.is_production or randint(0, cls.lucky_max) % 2 == 0:
+            return True
+        else:
+            return False
 
     def add_department(self, name):
         self.departments[name] = Department(name)
@@ -24,29 +34,37 @@ class StaffManagementSystem:
         if name in self.departments.keys():
             department = self.departments[name]
             if boss:
-                department.assign_boss(boss)
+                department.boss = boss
             if parent:
-                department.set_parent(parent)
+                department.parent = parent
             return department
         else:
             return None
 
-    def add_employee(self, name, email='', phone=''):
-        return Employee(name, email=email, phone=phone);
+    def add_employee(self, name, age, nda_is_accepted, email='', phone=''):
+        if StaffManagementSystem.is_lucky():
+            if not Employee.is_adult(age):
+                raise ValueError('Children\'s work is forbidden!')
+
+            if not nda_is_accepted:
+                raise ValueError('NDA is not accepted by employee candidate!')
+
+            return Employee(name, age, nda_is_accepted, email=email, phone=phone)
+        else:
+            raise ValueError('Employee is not lucky!')
 
     def create_company(self, name):
         return self.add_department(name)
 
     def assign_president(self, company, name):
-        self.president = self.add_employee(name)
+        nda_is_accepted = True
+        self.president = self.add_employee(name, 18, nda_is_accepted) # President is always adult :)
         position = self.add_position('President', company)
         self.employ(self.president, position)
         return self.president
 
     def add_position(self, name, department):
-        position = Position(name, department)
-        department.positions[name] = position
-        return position
+        return department.add_position(name)
 
     def add_positions(self, names, department):
         for name in names:
@@ -54,7 +72,7 @@ class StaffManagementSystem:
 
     def employ(self, employee, position, boss=None):
         if position.is_vacant == False:
-            raise ValueError
+            raise ValueError('This position is already vacant!')
         self.close_position(employee, position)
         if boss == None:
             boss = position.department.boss
@@ -122,11 +140,9 @@ class StaffManagementSystem:
     def vacancies(self):
         res = []
         for name in self.departments.keys():
-            positions = self.department(name).positions
-            for pos in positions.keys():
-                position = positions[pos]
-                if position.is_vacant:
-                    res.append(str(position))
+            positions = self.department(name).vacant_positions()
+            for position in positions:
+                res.append(str(position))
         return res
 
     def print_company_tree(self):

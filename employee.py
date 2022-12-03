@@ -1,15 +1,40 @@
+import logging
 import uuid
+
+class AcceptedNDA:
+
+    def __get__(self, obj):
+        logging.info('Asked about NDA accpetance')
+        return obj.is_accepted
+
+    def __set__(self, obj, value):
+        if value:
+            logging.info('Employee %r accepted NDA', obj.id)
+            obj.is_accepted = True
+        else:
+            logging.warning('Employee %r did not accept NDA', obj.id)
 
 class Employee:
 
-    def __init__(self, name, email='', phone=''):
+    accepted_NDA = AcceptedNDA()
+
+    def __init__(self, name, age, nda, email='', phone=''):
         self.id = uuid.uuid1()
         self.name = name
         self.email = email
         self.phone = phone
+        self.age = age
+        self.accepted_NDA = nda
         self.boss = None
         self.position = None
         self.subordinates = dict()
+
+    @staticmethod
+    def is_adult(age):
+        if age >= 18:
+            return True
+        else:
+            return False
 
     def update_email(self, email):
         if email:

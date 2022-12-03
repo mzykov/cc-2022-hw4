@@ -4,19 +4,19 @@ from employee import Employee
 class TestEmployee(unittest.TestCase):
 
     def test_email(self):
-        emploee = Employee('Empl name', email='old@email')
+        emploee = Employee('Empl name', 20, True, email='old@email')
         self.assertEqual(emploee.email, 'old@email')
         emploee.update_email('new@email')
         self.assertEqual(emploee.email, 'new@email')
 
     def test_phone(self):
-        emploee = Employee('Empl name', phone='+79667861234')
+        emploee = Employee('Empl name', 30, True, phone='+79667861234')
         self.assertEqual(emploee.phone, '+79667861234')
         emploee.update_phone('+79660987761')
         self.assertEqual(emploee.phone, '+79660987761')
 
     def test_representation(self):
-        emploee = Employee('Empl name')
+        emploee = Employee('Empl name', 40, True)
         self.assertEqual(str(emploee), 'Empl name')
         emploee.update_phone('+79660987761')
         self.assertEqual(str(emploee), 'Empl name / +79660987761')
